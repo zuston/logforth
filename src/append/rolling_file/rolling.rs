@@ -284,12 +284,12 @@ impl State {
             .collect::<Vec<_>>();
 
         if files.len() < max_files {
-            println!("file len: {files.len()}. max files: {max_files}");
+            println!("file len: {}. max files: {}", files.len(), max_files);
             return Ok(());
         }
 
         for (file, _) in &files {
-            println!("Gotten file: {}", file.file_name().unwrap());
+            println!("Gotten file: {}", file.file_name().display());
         }
 
         // sort the files by their creation timestamps.
