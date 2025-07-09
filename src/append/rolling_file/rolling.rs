@@ -244,28 +244,34 @@ impl State {
         let read_dir = fs::read_dir(&self.log_dir)
             .with_context(|| format!("failed to read log dir: {}", self.log_dir.display()))?;
 
+        println!("listing {}", &self.log_dir.display());
         let mut files = read_dir
             .filter_map(|entry| {
                 let entry = entry.ok()?;
+                let filename = entry.file_name();
                 let metadata = entry.metadata().ok()?;
+
+                println!("checking filename: {}", filename.display());
 
                 // the appender only creates files, not directories or symlinks,
                 // so we should never delete a dir or symlink.
                 if !metadata.is_file() {
+                    println!("is file: false");
                     return None;
                 }
 
-                let filename = entry.file_name();
                 // if the filename is not a UTF-8 string, skip it.
                 let filename = filename.to_str()?;
                 if let Some(prefix) = &self.log_filename_prefix {
                     if !filename.starts_with(prefix) {
+                        println!("prefix {}: {}", filename, prefix);
                         return None;
                     }
                 }
 
                 if let Some(suffix) = &self.log_filename_suffix {
                     if !filename.ends_with(suffix) {
+                        println!("suffix {}: {}", filename, suffix);
                         return None;
                     }
                 }
@@ -279,6 +285,8 @@ impl State {
                 }
 
                 let created = metadata.created().ok()?;
+                println!("done {}", filename);
+
                 Some((entry, created))
             })
             .collect::<Vec<_>>();
