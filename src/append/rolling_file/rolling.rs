@@ -274,6 +274,7 @@ impl State {
                     && self.log_filename_suffix.is_none()
                     && jiff::civil::DateTime::strptime(self.date_format, filename).is_err()
                 {
+                    println!("Skip {filename}");
                     return None;
                 }
 
@@ -283,7 +284,12 @@ impl State {
             .collect::<Vec<_>>();
 
         if files.len() < max_files {
+            println!("file len: {files.len()}. max files: {max_files}");
             return Ok(());
+        }
+
+        for (file, _) in &files {
+            println!("Gotten file: {}", file.file_name().unwrap());
         }
 
         // sort the files by their creation timestamps.
